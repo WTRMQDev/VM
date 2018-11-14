@@ -19,51 +19,53 @@
 # Any unknown opcode has "immediately return true" effect
 # If execution is finished and no value was returned, cast last element to bool and return (in this specific case any valid point will be casted to true), if no elements on main stack return False
 
-OP_RETURN = 0x00 
-OP_TRUE = 0x01 
-OP_FALSE = 0x02 
-OP_PUSHPOINT = 0x03 
-OP_PUSHBYTE = 0x04 
-OP_PUSH2BYTES = 0x05 
-OP_PUSH32BYTES = 0x06 
+OP_RETURN = 0x00 # Remove element from stack, cast it to bool and return
+OP_TRUE = 0x01 # Push true to stack
+OP_FALSE = 0x02 # Push false to stack
+OP_PUSHPOINT = 0x03 # Get next 33 bytes, deserialize it as point, push to stack
+OP_PUSHBYTE = 0x04 # Get next byte, push to stack
+OP_PUSH2BYTES = 0x05 # Get next 2 bytes, push to stack
+OP_PUSH32BYTES = 0x06 # Get next 32 bytes, push to stack
 
-OP_PUSHBYTES = 0x07 
+OP_PUSHBYTES = 0x07 # Remove element _n_ from stack, cast to number, get next _n_ bytes, push to stack as one element. _n_ should be less than than 1024
 
-OP_BOOLINVERT = 0x08 
+OP_BOOLINVERT = 0x08 # Remove element, cast to bool, invert, push to stack
 
 OP_IF = 0x09 
 OP_ELSE = 0x0a 
 OP_ENDIF = 0x0b 
 
-OP_INITIALIZESTACKS = 0x0c 
-OP_TOALTSTACK = 0x0d 
-OP_FROMALTSTACK = 0x0e 
+#stack
+OP_INITIALIZESTACKS = 0x0c # Remove element _n_ from stack, cast to number, initialise _n_ additional stacks. _n_ should be less than 255. Number of initialized stacks during script should be less than 255
+#Stack numeration starts from 0 where 0th stack is main stack and 1th and higher stacks - explicitly initialised stacks.
+OP_TOALTSTACK = 0x0d #Remove two elements _n_, (arbitraty)_data_ from stack, cast _n_ to number, push _data_ to n-th stack.
+OP_FROMALTSTACK = 0x0e #Remove element from main stack _n_, cast to number, remove element from nth stack, push to main stack
 
-OP_DUP = 0x0f 
-OP_DEPTH = 0x10 
-OP_ALTDEPTH = 0x11 
-OP_TYPEOF = 0x12 
+OP_DUP = 0x0f #Duplicate element on stack
+OP_DEPTH = 0x10 #Push number of elements in main stack to stack
+OP_ALTDEPTH = 0x11 #Remove element from main stack _n_, cast to number, push number of elements in _n_th stack to main stack
+OP_TYPEOF = 0x12 # Push type of top element in stack to stack: bytes -> 0x01, point ->0x02
 
-OP_DROP = 0x13 
-OP_SWAP = 0x14 
-OP_ARBITRARYSWAP = 0x15 
-OP_PICK = 0x16 
-OP_ROLL = 0x17 
+OP_DROP = 0x13 #Drop element from stack
+OP_SWAP = 0x14 #Swap two top elements
+OP_ARBITRARYSWAP = 0x15 #Remove  two elements from stack _n1_, _n2_, cast to number, swap n1th and n2th elements
+OP_PICK = 0x16 #Remove element from stack _n_, cast to number, push copy of nth element to stack
+OP_ROLL = 0x17 #Remove element from stack _n_, cast to number, remove nth element from stack and push to stack
 
-OP_SIZE = 0x18 
+OP_SIZE = 0x18 #Push size of element (implicit cast to bytes) in stack to stack
 
-OP_EQUAL = 0x19 
-OP_STRICTEQUAL = 0x1a 
+OP_EQUAL = 0x19 #Remove two elements from stack, check if equal (two bytes string are equal if casts to the same number)
+OP_STRICTEQUAL = 0x1a #Remove two elements from stack, check if equal (two bytes string are equal if identical)
 
-OP_INCREMENT = 0x1b 
-OP_DECREMENT = 0x1c 
-OP_ADD = 0x1d 
-OP_SUBTRACT = 0x1e 
-OP_LESSTHAN = 0x1f 
-OP_LESSTHANOREQUAL = 0x20 
-OP_MIN = 0x21 
-OP_MAX = 0x22 
-OP_MULTIDROP =0x23 
+OP_INCREMENT = 0x1b # Remove element from stack _n_, cast to number, add 1, push to stack
+OP_DECREMENT = 0x1c # Remove element from stack _n_, cast to number, subtract 1, push to stack
+OP_ADD = 0x1d # Remove two elements from stack _n1_, _n2_, cast to numbers, push summ to stack
+OP_SUBTRACT = 0x1e # Remove two elements from stack _n1_, _n2_, cast to numbers, push (n1-n2)>0? (n1-n2):0 to stack
+OP_LESSTHAN = 0x1f # Remove two elements from stack _n1_, _n2_, cast to numbers, push bool(n1<n2) to stack
+OP_LESSTHANOREQUAL = 0x20 # Remove two elements from stack _n1_, _n2_, cast to numbers, push bool(n1<=n2) to stack
+OP_MIN = 0x21 # Remove element from stack _n_, cast to number, push to stack minimal element from n top elements on stack (elements are compared as number, leading zeroes will be removed)
+OP_MAX = 0x22 # Remove element from stack _n_, cast to number, push to stack maximal element from n top elements on stack (elements are compared as number, leading zeroes will be removed)
+OP_MULTIDROP =0x23 #Remove element from stack _n_, cast to number, remove n elements from stack
 
 
 OP_SHA256 = 0x24 
