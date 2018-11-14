@@ -1,3 +1,24 @@
+#Stack machine has 2 types in it:
+# points on elliptic curve
+# bytes
+
+#There are implicit casts:
+# bytes -> numbers (big endian)
+# numbers -> bytes (big endian)
+# bytes -> bools (nonzero bytes -> false, anythin else ->true) 
+# points -> bytes (serialization)
+# bytes -> points (deserialization)
+# bools -> bytes (true -> 0x01, false ->0x00)
+# no chains of casts: points will not be casted to number or bool
+
+# If there is not enough elements on stack, return false
+# If there wrong type of element on stack, return false
+# If note enough bytes in script for load opcode, return false
+# If element on stack is not 33 bytes long or can not be casted to valid point and implicit cast is required, return False
+# If 33 bytes after OP_PUSH_POINT can not be treated as valid point serialization, return false
+# Any unknown opcode has "immediately return true" effect
+# If execution is finished and no value was returned, cast last element to bool and return (in this specific case any valid point will be casted to true), if no elements on main stack return False
+
 OP_RETURN = 0x00 
 OP_TRUE = 0x01 
 OP_FALSE = 0x02 
