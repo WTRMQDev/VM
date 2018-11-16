@@ -68,22 +68,23 @@ OP_MAX = 0x22 # Remove element from stack _n_, cast to number, push to stack max
 OP_MULTIDROP =0x23 #Remove element from stack _n_, cast to number, remove n elements from stack
 
 
-OP_SHA256 = 0x24 
-OP_SHA3 = 0x25 
+OP_SHA256 = 0x24 #Remove element from stack, cast to bytes, push hash256 to stack
+OP_SHA3 = 0x25 #Remove element from stack, cast to bytes, push hash3 to stack
 
-OP_FINDEXCESS = 0x26 
+# lookups
+OP_FINDEXCESS = 0x26 #Remove 2 elements from stack _pubkey_, _hash_, check that set of excesses after transaction generation contains excess with this public key and signed sha256 hash of message, put message to stack, if there is no such excess - halt execution and return false
 
 
-OP_OUTPUTORHASH = 0x27 
+OP_OUTPUTORHASH = 0x27 #Remove 3 elements from stack _commitment_, _pubkey_, _hash_, check that set of output contains commitment or set of excesses  contains excess with this public key and signed sha256 hash of message. If both checks was failed - halt execution and return false
 
-OP_2BYTESOPS = 0x28 
+OP_2BYTESOPS = 0x28 # After this opcode 2bytes per OP is activated
 
-OP_EVAL = 0x29 
+OP_EVAL = 0x29 # Get element from stack, insert to begining of script. Note, while number of OP_EVAL instructions is not limited, number of inserted bytes during all operations is limited by 1024 bytes.
 
-OP_BNGT = 0x30 
+OP_BNGT = 0x30 # Get element from stack _n_, cast to number, get height of previous block _h_, check that _n_<=_h_ and put _h_-_n_ on stack, otherwise halt execution and return false
 
-OP_TIMEGT = 0x31 
+OP_TIMEGT = 0x31 # Get element from stack _n_, cast to number, get UNIX timestamp of previous block _t_, check that _n_<=_t_ and put _h_-_n_ on stack, otherwise halt execution and return false
 
-OP_NOTHING = 0x32 
+OP_NOTHING = 0x32 # Do nothing.
 
 
