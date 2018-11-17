@@ -1,6 +1,7 @@
 from utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
 from typing import Dict, List, TYPE_CHECKING
 from opcodes import *
+import hashlib
 
         
 
@@ -349,6 +350,32 @@ def f_IF(stacks: List[List[StackData]], script: bytes) -> bytes:
 
 def f_UNASSIGNED(stacks: List[List[StackData]], script: bytes) -> bytes:
   raise ReturnException(True)
+  return script
+
+def f_SHA256(stacks: List[List[StackData]], script: bytes) -> bytes:
+  preimage = stacks[0].pop()
+  if isinstance(preimage, StackBytes):
+    preimage_bytes = preimage.to_bytes()
+  else:
+    raise ScriptException("Bytes casted to %s"%(type(preimage)))
+  m = hashlib.sha256()
+  m.update(preimage_bytes)
+  image = StackBytes(m.digest())
+  stacks[0].append(image)
+  return script
+
+def f_SHA3(stacks: List[List[StackData]], script: bytes) -> bytes:
+  if not "sha3_256" in hashlib.algorithms_available:
+    import sha3
+  preimage = stacks[0].pop()
+  if isinstance(preimage, StackBytes):
+    preimage_bytes = preimage.to_bytes()
+  else:
+    raise ScriptException("Bytes casted to %s"%(type(preimage)))
+  m = hashlib.sha3_256() #type: ignore    #sha3 will monkey-patch if python version <3.6
+  m.update(preimage_bytes)
+  image = StackBytes(m.digest())
+  stacks[0].append(image)
   return script
 
 
