@@ -31,9 +31,10 @@ OP_PUSHBYTES = 0x07 # Remove element _n_ from stack, cast to number, get next _n
 
 OP_BOOLINVERT = 0x08 # Remove element, cast to bool, invert, push to stack
 
-OP_IF = 0x09 
-OP_ELSE = 0x0a 
-OP_ENDIF = 0x0b 
+#flow controls
+OP_IF = 0x09 # Remove 3 elements from stack _x_, _n1_, _n2_. Remove _n1_ bytes from script (first part), and then _n2_ bytes from script (second part). Cast _x_ to bool, if true push first part to script, else second one. If _n1_+_n2_ greater than script length return false
+OP_ELSE = 0x0a #obsolete XXX
+OP_ENDIF = 0x0b #obsolete XXX
 
 #stack
 OP_INITIALIZESTACKS = 0x0c # Remove element _n_ from stack, cast to number, initialise _n_ additional stacks. _n_ should be less than 255. Number of initialized stacks during script should be less than 255
