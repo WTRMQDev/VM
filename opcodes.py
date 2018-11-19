@@ -33,8 +33,9 @@ OP_BOOLINVERT = 0x08 # Remove element, cast to bool, invert, push to stack
 
 #flow controls
 OP_IF = 0x09 # Remove 3 elements from stack _x_, _n1_, _n2_. Remove _n1_ bytes from script (first part), and then _n2_ bytes from script (second part). Cast _x_ to bool, if true push first part to script, else second one. If _n1_+_n2_ greater than script length return false
-OP_ELSE = 0x0a #obsolete XXX
-OP_ENDIF = 0x0b #obsolete XXX
+
+OP_POINTSSUM = 0x0a  # Remove two elements from stack _p1_, _p2_, cast to points, push sum to stack
+OP_POINTMULT = 0x0b # Remove two elements from stack _x_, _p1_, cast _x_ to integer (mod curve order), cast _p1_ to points, push _x_*_p1_ to stack
 
 #stack
 OP_INITIALIZESTACKS = 0x0c # Remove element _n_ from stack, cast to number, initialise _n_ additional stacks. _n_ should be less than 255. Number of initialized stacks during script should be less than 255
