@@ -77,7 +77,7 @@ OP_SHA3 = 0x25 #Remove element from stack, cast to bytes, push hash3 to stack
 OP_FINDEXCESS = 0x26 #Remove 2 elements from stack _pubkey_, _hash_, check that set of excesses after transaction generation contains excess with this public key and signed sha256 hash of message, put message to stack, if there is no such excess - halt execution and return false
 
 
-OP_OUTPUTORHASH = 0x27 #Remove 3 elements from stack _commitment_, _pubkey_, _hash_, check that set of output contains commitment or set of excesses  contains excess with this public key and signed sha256 hash of message. If both checks was failed - halt execution and return false
+OP_OUTPUTORHASH = 0x27 #Remove 3 elements from stack _commitment_, _pubkey_, _hash_, check that set of outputs contains commitment or set of excesses  contains excess with this public key and signed sha256 hash of message. If both checks were failed - halt execution and return false
 
 OP_2BYTESOPS = 0x28 # After this opcode 2bytes per OP is activated
 
