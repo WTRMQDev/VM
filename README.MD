@@ -8,8 +8,6 @@ This stack machine has 2 types in it:
 
 ## TODO
 
-* Operations for points (+, multiplication)
-* PUSHPOINT (patch for libsecp256k1 is required)
 * Logic for `excess_lookup`, `output_lookup` and `burden` is required (stubs for now)
 * tests
 
