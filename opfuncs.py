@@ -206,7 +206,7 @@ def f_EQUAL(stacks: List[List[StackData]], script: bytes) -> bytes:
     ser1, ser2 = n1.to_bytes(), n2.to_bytes()
     n1_int, n2_int = int.from_bytes(ser1, "big"), int.from_bytes(ser2, "big")
   else:
-    raise ScriptException("to bytes casted to %s and %s"%(type(n1), type(n2)))
+    raise ScriptException("Implicit chain of casts ->bytes->int is prohibited.  %s and %s"%(type(n1), type(n2)))
   if n1_int==n2_int:
     stacks[0].append(StackBytes(b"\x01"))
   else:
@@ -216,10 +216,7 @@ def f_EQUAL(stacks: List[List[StackData]], script: bytes) -> bytes:
 def f_STRICTEQUAL(stacks: List[List[StackData]], script: bytes) -> bytes:
   n1 = stacks[0].pop()
   n2 = stacks[0].pop()
-  if isinstance(n1, StackBytes) and isinstance(n2, StackBytes):
-    ser1, ser2 = n1.to_bytes(), n2.to_bytes()
-  else:
-    raise ScriptException("to bytes casted to %s and %s"%(type(n1), type(n2)))
+  ser1, ser2 = n1.to_bytes(), n2.to_bytes()
   if ser1==ser2:
     stacks[0].append(StackBytes(b"\x01"))
   else:
@@ -230,18 +227,18 @@ def f_STRICTEQUAL(stacks: List[List[StackData]], script: bytes) -> bytes:
 def f_INCREMENT(stacks: List[List[StackData]], script: bytes) -> bytes:
   element = stacks[0].pop()
   if isinstance(element, StackBytes):
-    stacks[0].append( StackBytes(itb(1+int.from_bytes(element.to_bytes(),"big"))) )
+    n = element.to_int() + 1
+    stacks[0].append( StackBytes( itb(n) ) )
   else:
-    raise ScriptException("to bytes casted to %s"%(type(element)))
+    raise ScriptException("Implicit chain of casts ->bytes->int is prohibited. %s"%(type(element)))
   return script
 
 def f_DECREMENT(stacks: List[List[StackData]], script: bytes) -> bytes:
   element = stacks[0].pop()
   if isinstance(element, StackBytes):
-    n=int.from_bytes(element.to_bytes(),"big")
+    n= element.to_int() -1
   else:
-    raise ScriptException("to bytes casted to %s"%(type(element)))
-  n=n-1
+    raise ScriptException("Implicit chain of casts ->bytes->int is prohibited. %s"%(type(element)))
   if n<0:
     n=0
   stacks[0].append( StackBytes(itb(n)) )
@@ -362,10 +359,7 @@ def f_NOTHING(stacks: List[List[StackData]], script: bytes) -> bytes:
 
 def f_SHA256(stacks: List[List[StackData]], script: bytes) -> bytes:
   preimage = stacks[0].pop()
-  if isinstance(preimage, StackBytes):
-    preimage_bytes = preimage.to_bytes()
-  else:
-    raise ScriptException("Bytes casted to %s"%(type(preimage)))
+  preimage_bytes = preimage.to_bytes()
   m = hashlib.sha256()
   m.update(preimage_bytes)
   image = StackBytes(m.digest())
@@ -376,10 +370,7 @@ def f_SHA3(stacks: List[List[StackData]], script: bytes) -> bytes:
   if not "sha3_256" in hashlib.algorithms_available:
     import sha3
   preimage = stacks[0].pop()
-  if isinstance(preimage, StackBytes):
-    preimage_bytes = preimage.to_bytes()
-  else:
-    raise ScriptException("Bytes casted to %s"%(type(preimage)))
+  preimage_bytes = preimage.to_bytes()
   m = hashlib.sha3_256() #type: ignore    #sha3 will monkey-patch if python version <3.6
   m.update(preimage_bytes)
   image = StackBytes(m.digest())
@@ -404,6 +395,6 @@ def f_POINTMULT(stacks: List[List[StackData]], script: bytes) -> bytes:
   stacks[0].append(StackPoint(p1*num))
   return script
 
-op_func_dict = {OP_RETURN: f_RETURN, OP_TRUE: f_TRUE, OP_FALSE: f_FALSE, OP_PUSHPOINT: f_PUSHPOINT, OP_PUSHBYTE: f_PUSHBYTE, OP_PUSH2BYTES: f_PUSH2BYTES, OP_PUSH32BYTES: f_PUSH32BYTES, OP_PUSHBYTES: f_PUSHBYTES, OP_BOOLINVERT: f_BOOLINVERT, OP_INITIALIZESTACKS: f_INITIALIZESTACKS, OP_TOALTSTACK: f_TOALTSTACK, OP_FROMALTSTACK: f_FROMALTSTACK, OP_DUP: f_DUP, OP_DEPTH: f_DEPTH, OP_ALTDEPTH: f_ALTDEPTH, OP_TYPEOF: f_TYPEOF, OP_DROP: f_DROP, OP_SWAP: f_SWAP, OP_ARBITRARYSWAP: f_ARBITRARYSWAP, OP_PICK: f_PICK, OP_ROLL: f_ROLL, OP_SIZE: f_SIZE, OP_EQUAL: f_EQUAL, OP_STRICTEQUAL: f_STRICTEQUAL, OP_INCREMENT: f_INCREMENT, OP_DECREMENT: f_DECREMENT, OP_ADD: f_ADD, OP_SUBTRACT: f_SUBTRACT, OP_LESSTHAN: f_LESSTHAN, OP_LESSTHANOREQUAL: f_LESSTHANOREQUAL, OP_MIN: f_MIN, OP_MAX: f_MAX, OP_MULTIDROP: f_MULTIDROP, OP_IF: f_IF, OP_SHA256: f_SHA256, OP_SHA3: f_SHA3, OP_POINTSSUM: f_POINTSSUM, OP_POINTMULT: f_POINTMULT, OP_NOTHING: f_NOTHING}
 
+op_func_dict = {OP_RETURN: f_RETURN, OP_TRUE: f_TRUE, OP_FALSE: f_FALSE, OP_PUSHPOINT: f_PUSHPOINT, OP_PUSHBYTE: f_PUSHBYTE, OP_PUSH2BYTES: f_PUSH2BYTES, OP_PUSH32BYTES: f_PUSH32BYTES, OP_PUSHBYTES: f_PUSHBYTES, OP_BOOLINVERT: f_BOOLINVERT, OP_INITIALIZESTACKS: f_INITIALIZESTACKS, OP_TOALTSTACK: f_TOALTSTACK, OP_FROMALTSTACK: f_FROMALTSTACK, OP_DUP: f_DUP, OP_DEPTH: f_DEPTH, OP_ALTDEPTH: f_ALTDEPTH, OP_TYPEOF: f_TYPEOF, OP_DROP: f_DROP, OP_SWAP: f_SWAP, OP_ARBITRARYSWAP: f_ARBITRARYSWAP, OP_PICK: f_PICK, OP_ROLL: f_ROLL, OP_SIZE: f_SIZE, OP_EQUAL: f_EQUAL, OP_STRICTEQUAL: f_STRICTEQUAL, OP_INCREMENT: f_INCREMENT, OP_DECREMENT: f_DECREMENT, OP_ADD: f_ADD, OP_SUBTRACT: f_SUBTRACT, OP_LESSTHAN: f_LESSTHAN, OP_LESSTHANOREQUAL: f_LESSTHANOREQUAL, OP_MIN: f_MIN, OP_MAX: f_MAX, OP_MULTIDROP: f_MULTIDROP, OP_IF: f_IF, OP_SHA256: f_SHA256, OP_SHA3: f_SHA3, OP_POINTSSUM: f_POINTSSUM, OP_POINTMULT: f_POINTMULT, OP_NOTHING: f_NOTHING}
 
