@@ -1,4 +1,5 @@
 from typing import TypeVar, Type
+from secp256k1_zkp import Point
 
 class ScriptException(Exception):
   def __init__(self, error_message):
@@ -12,6 +13,9 @@ class StackData:
   def to_bytes(self) -> bytes:
     raise NotImplemented #Should be overwrited in subclass
     return b""
+  def to_point(self) -> Point:
+    raise NotImplemented #Should be overwrited in subclass
+    return Point()
 
 StackBytesType = TypeVar('StackBytesType', bound='StackBytes')
 StackPointType = TypeVar('StackPointType', bound='StackPoint')
@@ -34,13 +38,21 @@ class StackBytes(StackData):
       return "StackBytes(%s: %s)"%(repr(self.data), int.from_bytes(self.data, "big"))    
     return "StackBytes(%s...)"%(repr(self.data[:6]))
 
-  def to_point(self: StackBytesType) -> StackPointType: #return secp256k1_zkp point
-    pass
+  def to_point(self: StackBytesType) -> Point: 
+    try:
+      return Point(raw_point=self.data)
+    except:
+      raise ScriptException("Invalid point")
 
 class StackPoint(StackData):
-  pass
+  def __init__(self: StackPointType, point: Point):
+    self.point = point
+
   def to_bytes(self: StackPointType) -> bytes:
-    pass
+    return bytes(self.point.serialize())
+
+  def to_point(self: StackPointType) -> Point: 
+    return self.point
 
 
 
