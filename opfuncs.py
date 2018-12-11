@@ -1,6 +1,7 @@
 from utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
 from typing import Dict, List, TYPE_CHECKING
 from opcodes import *
+from secp256k1_zkp import Point
 import hashlib
 
         
@@ -33,8 +34,12 @@ def f_TRUE(stacks: List[List[StackData]], script: bytes) -> bytes:
   return script
 
 def f_PUSHPOINT(stacks: List[List[StackData]], script: bytes) -> bytes:
-  raise NotImplementedError
   s_point, script = script[:33], script[33:]
+  try:
+    p =  Point(raw_point=s_point)
+  except:
+    raise ScriptException("Invalid point")
+  stacks[0].append(StackPoint(p))
   return script
 
 def f_PUSHBYTE(stacks: List[List[StackData]], script: bytes) -> bytes:
@@ -378,7 +383,24 @@ def f_SHA3(stacks: List[List[StackData]], script: bytes) -> bytes:
   stacks[0].append(image)
   return script
 
+def f_POINTSSUM(stacks: List[List[StackData]], script: bytes) -> bytes:
+  sp1 = stacks[0].pop()
+  sp2 = stacks[0].pop()
+  p1, p2 = sp1.to_point(), sp2.to_point()
+  stacks[0].append(StackPoint(p1+p2))
+  return script
 
-op_func_dict = {OP_RETURN: f_RETURN, OP_TRUE: f_TRUE, OP_FALSE: f_FALSE, OP_PUSHPOINT: f_PUSHPOINT, OP_PUSHBYTE: f_PUSHBYTE, OP_PUSH2BYTES: f_PUSH2BYTES, OP_PUSH32BYTES: f_PUSH32BYTES, OP_PUSHBYTES: f_PUSHBYTES, OP_BOOLINVERT: f_BOOLINVERT, OP_INITIALIZESTACKS: f_INITIALIZESTACKS, OP_TOALTSTACK: f_TOALTSTACK, OP_FROMALTSTACK: f_FROMALTSTACK, OP_DUP: f_DUP, OP_DEPTH: f_DEPTH, OP_ALTDEPTH: f_ALTDEPTH, OP_TYPEOF: f_TYPEOF, OP_DROP: f_DROP, OP_SWAP: f_SWAP, OP_ARBITRARYSWAP: f_ARBITRARYSWAP, OP_PICK: f_PICK, OP_ROLL: f_ROLL, OP_SIZE: f_SIZE, OP_EQUAL: f_EQUAL, OP_STRICTEQUAL: f_STRICTEQUAL, OP_INCREMENT: f_INCREMENT, OP_DECREMENT: f_DECREMENT, OP_ADD: f_ADD, OP_SUBTRACT: f_SUBTRACT, OP_LESSTHAN: f_LESSTHAN, OP_LESSTHANOREQUAL: f_LESSTHANOREQUAL, OP_MIN: f_MIN, OP_MAX: f_MAX, OP_MULTIDROP: f_MULTIDROP, OP_IF: f_IF, OP_SHA256: f_SHA256, OP_SHA3: f_SHA3}
+def f_POINTMULT(stacks: List[List[StackData]], script: bytes) -> bytes:
+  n = stacks[0].pop()
+  sp1 = stacks[0].pop()
+  if isinstance(n, StackBytes):
+    num=n.to_int()
+  else:
+    raise ScriptException("Implicit chain of casts ->bytes->int is prohibited. %s"%(type(n)))
+  p1 = sp1.to_point()
+  stacks[0].append(StackPoint(p1*num))
+  return script
+
+op_func_dict = {OP_RETURN: f_RETURN, OP_TRUE: f_TRUE, OP_FALSE: f_FALSE, OP_PUSHPOINT: f_PUSHPOINT, OP_PUSHBYTE: f_PUSHBYTE, OP_PUSH2BYTES: f_PUSH2BYTES, OP_PUSH32BYTES: f_PUSH32BYTES, OP_PUSHBYTES: f_PUSHBYTES, OP_BOOLINVERT: f_BOOLINVERT, OP_INITIALIZESTACKS: f_INITIALIZESTACKS, OP_TOALTSTACK: f_TOALTSTACK, OP_FROMALTSTACK: f_FROMALTSTACK, OP_DUP: f_DUP, OP_DEPTH: f_DEPTH, OP_ALTDEPTH: f_ALTDEPTH, OP_TYPEOF: f_TYPEOF, OP_DROP: f_DROP, OP_SWAP: f_SWAP, OP_ARBITRARYSWAP: f_ARBITRARYSWAP, OP_PICK: f_PICK, OP_ROLL: f_ROLL, OP_SIZE: f_SIZE, OP_EQUAL: f_EQUAL, OP_STRICTEQUAL: f_STRICTEQUAL, OP_INCREMENT: f_INCREMENT, OP_DECREMENT: f_DECREMENT, OP_ADD: f_ADD, OP_SUBTRACT: f_SUBTRACT, OP_LESSTHAN: f_LESSTHAN, OP_LESSTHANOREQUAL: f_LESSTHANOREQUAL, OP_MIN: f_MIN, OP_MAX: f_MAX, OP_MULTIDROP: f_MULTIDROP, OP_IF: f_IF, OP_SHA256: f_SHA256, OP_SHA3: f_SHA3, OP_POINTSSUM: f_POINTSSUM, OP_POINTMULT: f_POINTMULT}
 
 
