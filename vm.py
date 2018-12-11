@@ -22,13 +22,13 @@ def execute(script: bytes, \
       elif regime == "2 byte":
         op, script = int.from_bytes(script[0:2], "big"), script[2:]
       last_op = op
-      if not op in [OP_EVAL, OP_2BYTESOPS, OP_FINDEXCESS, OP_OUTPUTORHASH, OP_BNGT, OP_TIMEGT]:
+      if not op in special_ops:
         f = op_func_dict.get(op, f_UNASSIGNED)
         script = f(stacks, script)
       elif op==OP_EVAL: 
         data = stacks[0].pop().to_bytes()
         if len(data)+evaluated_bytes>1024:
-          raise ScriptException("Summary length of eval'ed bytes greater than 1024: requested evalueation of %d bytes, already evaluated %d bytes"%(len(data), evaluated_bytes))
+          raise ScriptException("Summary length of eval'ed bytes greater than 1024: requested evaluation of %d bytes, already evaluated %d bytes"%(len(data), evaluated_bytes))
         else:
           evaluated_bytes += len(data)
           script = data+script
