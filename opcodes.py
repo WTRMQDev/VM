@@ -5,7 +5,7 @@
 #There are implicit casts:
 # bytes -> numbers (big endian)
 # numbers -> bytes (big endian)
-# bytes -> bools (nonzero bytes -> false, anythin else ->true) 
+# bytes -> bools (nonzero bytes -> true, anythin else ->false) 
 # points -> bytes (serialization)
 # bytes -> points (deserialization)
 # bools -> bytes (true -> 0x01, false ->0x00)
@@ -56,8 +56,8 @@ OP_ROLL = 0x17 #Remove element from stack _n_, cast to number, remove nth elemen
 
 OP_SIZE = 0x18 #Push size of element (implicit cast to bytes) in stack to stack
 
-OP_EQUAL = 0x19 #Remove two elements from stack, check if equal (two bytes string are equal if casts to the same number)
-OP_STRICTEQUAL = 0x1a #Remove two elements from stack, check if equal (two bytes string are equal if identical)
+OP_EQUAL = 0x19 #Remove two elements from stack, cast to numbers, check if equal (Thus b'\x00\x03' will be equal b'\x03')
+OP_STRICTEQUAL = 0x1a #Remove two elements from stack, cast to bytes (two bytes string are equal if identical)
 
 OP_INCREMENT = 0x1b # Remove element from stack _n_, cast to number, add 1, push to stack
 OP_DECREMENT = 0x1c # Remove element from stack _n_, cast to number, subtract 1, push to stack
