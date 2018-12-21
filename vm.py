@@ -48,12 +48,11 @@ def execute(script: bytes, \
       elif op==OP_OUTPUTORHASH:
         commitment = stacks[0].pop().to_point()
         pubkey = stacks[0].pop().to_point()
-        _hash = stacks[0].pop().to_bytes()
         commitment_existence = output_lookup(commitment)        
         if commitment_existence:
-          burden.append((commitment, pubkey, _hash)) #Note burden would be imposed only if script return True
+          burden.append((commitment, pubkey)) #Note burden would be imposed only if script return True
         else:
-          preimage = excess_lookup(pubkey, _hash)
+          preimage = excess_lookup(pubkey, sha256("\x01\x00"+commitment.to_bytes()) )
           if isinstance(preimage, bool):
             if preimage==False:
               raise ScriptException("Excess with pubkey %s and hash(message) %s not found"%(str(pubkey), _hash))          
