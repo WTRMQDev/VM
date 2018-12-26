@@ -1,6 +1,6 @@
-from opcodes import *
-from opfuncs import *
-from utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
+from .opcodes import *
+from .opfuncs import *
+from .utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
 from typing import Dict, List, Callable, Union, Any, Tuple
 
 

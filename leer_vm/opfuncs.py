@@ -1,6 +1,6 @@
-from utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
+from .utils import ScriptException, ReturnException, StackData, StackBytes, StackPoint, itb
 from typing import Dict, List, TYPE_CHECKING
-from opcodes import *
+from .opcodes import *
 from secp256k1_zkp import Point
 import hashlib
 
