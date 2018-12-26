@@ -1,4 +1,4 @@
 *.pyc
 *cache
-test.py
-example_script.vm
+*test.py
+*example_script.vm
