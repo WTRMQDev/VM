@@ -2,3 +2,7 @@
 *cache
 *test.py
 *example_script.vm
+*pycache*
+dist
+build
+*egg-info
