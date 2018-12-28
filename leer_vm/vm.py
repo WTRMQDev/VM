@@ -6,7 +6,7 @@ from typing import Dict, List, Callable, Union, Any, Tuple
 
 def execute(script: bytes, \
             prev_block_props: Dict[str, int], \
-            excess_lookup: Callable[[StackPoint, bytes],Union[bool,bytes]], \
+            excess_lookup: Callable[[Any, bytes],Union[bool,bytes]], \
             output_lookup: Callable[[Any],Union[bool]], \
             burden: List[Tuple], #TODO
             execution_metadata: Dict[str,Any]={}):
@@ -37,7 +37,7 @@ def execute(script: bytes, \
       elif op==OP_FINDEXCESS:
         pubkey = stacks[0].pop().to_point()
         _hash = stacks[0].pop().to_bytes()
-        preimage = excess_lookup(pubkey, _hash) #excess_lookup returns preimage or false if cant find anything
+        preimage = excess_lookup(pubkey=pubkey, _hash=_hash) #excess_lookup returns preimage or false if cant find anything
         if isinstance(preimage, bytes):
           stacks[0].append(StackBytes(preimage))
         else:
@@ -48,11 +48,11 @@ def execute(script: bytes, \
       elif op==OP_OUTPUTORHASH:
         commitment = stacks[0].pop().to_point()
         pubkey = stacks[0].pop().to_point()
-        commitment_existence = output_lookup(commitment)        
+        commitment_existence = output_lookup(commitment=commitment)        
         if commitment_existence:
           burden.append((commitment, pubkey)) #Note burden would be imposed only if script return True
         else:
-          preimage = excess_lookup(pubkey, sha256("\x01\x00"+commitment.to_bytes()) )
+          preimage = excess_lookup(pubkey=pubkey, _hash=sha256("\x01\x00"+commitment.to_bytes()) )
           if isinstance(preimage, bool):
             if preimage==False:
               raise ScriptException("Excess with pubkey %s and hash(message) %s not found"%(str(pubkey), _hash))          
