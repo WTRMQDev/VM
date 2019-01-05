@@ -5,7 +5,7 @@ with open("README.MD", "r") as fh:
 
 setuptools.setup(
     name="leer_vm",
-    version="1.0",
+    version="1.1",
     author="Crez Khansick",
     author_email="TetsuwanAtomu@tuta.io", 
     description="Virtual Machine for leer cryptocurrency",
