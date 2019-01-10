@@ -18,7 +18,7 @@ setuptools.setup(
     install_requires=['secp256k1_zkp>=0.14.3', 'sha3'],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Development Status :: 4 - Betta",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
